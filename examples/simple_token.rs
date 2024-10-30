@@ -36,7 +36,7 @@ fn main() {
     eprintln!("traces: {:#?}", traces);
     let reverted_traces = traces
         .into_iter()
-        .filter(|t| *t.last().unwrap().clone() == Instruction::Revert)
+        .filter(|t| *t.last().unwrap().to_owned() == Instruction::Revert)
         .collect::<Vec<_>>();
     eprintln!("TRACES WITH REVERTS {:#?}", reverted_traces);
     //assert_eq!(8, reverted_traces.len());
