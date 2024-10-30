@@ -3,9 +3,12 @@ use std::collections::HashMap;
 use ruint::aliases::U256;
 use z3_ext::ast::{Ast, Bool};
 
-use crate::{smt::BitVec, storage::Address, parser::Program, bvi, conversion::bitvec_array_to_bv, random_bv_arg};
+use crate::{
+    bvi, conversion::bitvec_array_to_bv, parser::Program, random_bv_arg, smt::BitVec,
+    storage::Address,
+};
 
-use super::env::{call_data_size, call_data_load, caller};
+use super::env::{call_data_load, call_data_size, caller};
 
 #[derive(Debug, Clone, Default)]
 pub struct ExecutionEnv<'ctx> {
@@ -15,12 +18,10 @@ pub struct ExecutionEnv<'ctx> {
     result: Option<EvmResult>,
     logs: Vec<Log>,
     balances: HashMap<Address, U256>,
-    constraints: Vec<Bool<'ctx>>
+    constraints: Vec<Bool<'ctx>>,
 }
 
-
 impl<'ctx> ExecutionEnv<'ctx> {
-
     pub fn gen_random_address_20() -> Address {
         random_bv_arg()
     }
@@ -48,7 +49,7 @@ impl<'ctx> ExecutionEnv<'ctx> {
         let cd_bytes: Vec<BitVec<1>> = cd_bytes.into_iter().map(|b| BitVec::from([b; 1])).collect();
         self.tx.calldata = Some(cd_bytes);
         self
-    } 
+    }
 
     pub fn caller(&self) -> BitVec<32> {
         if let Some(ref caller) = self.tx.caller {
@@ -57,7 +58,7 @@ impl<'ctx> ExecutionEnv<'ctx> {
             caller().apply(&[]).as_bv().unwrap().into()
         }
     }
-    
+
     pub fn get_contract_code(&self, addr: &Address) -> Option<&Program> {
         self.code.get(addr)
     }
@@ -72,29 +73,31 @@ impl<'ctx> ExecutionEnv<'ctx> {
     }
 
     pub fn calldataload(&self, offset: &BitVec<32>) -> BitVec<32> {
-        
         if let Some(ref cd) = self.tx.calldata {
             let offset = offset.clone().into();
             let bv_arr = cd[offset..].to_vec();
             let bv = bitvec_array_to_bv(bv_arr);
-            
+
             BitVec::from(bv)
         } else {
-            call_data_load().apply(&[offset.as_ref()]).as_bv().unwrap().into()
+            call_data_load()
+                .apply(&[offset.as_ref()])
+                .as_bv()
+                .unwrap()
+                .into()
         }
     }
-
 }
 // Note: tradeoffs between Log with LogTopic enum vs top-lvl enum for Log vs merely a struct
 // with a [Option<BitVec<32>>; 4] array for topics...
 #[derive(Debug, Clone)]
 pub struct Log {
     data: Vec<BitVec<1>>,
-    topics: LogTopic
+    topics: LogTopic,
 }
 
 #[derive(Debug, Clone)]
-pub enum LogTopic{
+pub enum LogTopic {
     One(BitVec<32>),
     Two(BitVec<32>, BitVec<32>),
     Three(BitVec<32>, BitVec<32>, BitVec<32>),
@@ -103,17 +106,15 @@ pub enum LogTopic{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum EvmResult {
-    Failed {
-        msg: String
-    },
-    Success {
-        ret_val: BitVec<32>
-    }
+    Failed { msg: String },
+    Success { ret_val: BitVec<32> },
 }
 
 impl Default for EvmResult {
     fn default() -> Self {
-        Self::Failed { msg: "Execution unfinished".to_string() }
+        Self::Failed {
+            msg: "Execution unfinished".to_string(),
+        }
     }
 }
 #[derive(Debug, Clone, Default)]
@@ -131,5 +132,5 @@ pub struct Block {
     difficulty: Option<BitVec<32>>,
     gaslimit: Option<BitVec<32>>,
     number: Option<BitVec<32>>,
-    timestamp: Option<BitVec<32>>
+    timestamp: Option<BitVec<32>>,
 }

@@ -14,7 +14,6 @@ use crate::storage::{AccountStorage, StorageValue};
 use uuid::Uuid;
 use z3_ext::ast::Bool;
 
-
 pub trait NodeLike {
     fn parent(&self) -> &Self;
 }
@@ -46,7 +45,7 @@ pub trait MachineState<const STACK_ITEM_SZ: usize> {
 
 pub trait Machine<const STACK_ITEM_SZ: usize> {
     type State: MachineState<STACK_ITEM_SZ>;
-    
+
     // All possible final states
     fn exec(&mut self) -> Execution;
     fn pgm(&self) -> Program;

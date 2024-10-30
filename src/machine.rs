@@ -76,7 +76,7 @@ pub struct Evm<'ctx> {
     pub states: StateTree<'ctx>,
     change_log: Vec<MachineRecord<32>>,
     pub inverse_state: HashMap<Uuid, Uuid>,
-    ctx: RwLock<ExecutionEnv<'ctx>>
+    ctx: RwLock<ExecutionEnv<'ctx>>,
 }
 
 impl<'ctx> Evm<'ctx> {
@@ -93,7 +93,7 @@ impl<'ctx> Evm<'ctx> {
             },
             change_log: vec![],
             inverse_state: Default::default(),
-            ctx: RwLock::new(ExecutionEnv::default())
+            ctx: RwLock::new(ExecutionEnv::default()),
         }
     }
 
@@ -117,7 +117,7 @@ impl<'ctx> Evm<'ctx> {
             },
             change_log: vec![],
             inverse_state: Default::default(),
-            ctx: RwLock::new(env)
+            ctx: RwLock::new(env),
         }
     }
 
@@ -234,7 +234,8 @@ impl<'ctx> Machine<32> for Evm<'ctx> {
                 //     let continue_from_right = step.right_id();
                 if let Some(right_id) = step.right_id() {
                     ids.push(right_id.id());
-                    let nxt_right_step = exec.step_from_mut(right_id, self.ctx.read().as_ref().unwrap());
+                    let nxt_right_step =
+                        exec.step_from_mut(right_id, self.ctx.read().as_ref().unwrap());
                     step_recs.push(nxt_right_step);
                 }
                 //}

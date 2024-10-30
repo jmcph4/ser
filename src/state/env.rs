@@ -10,7 +10,6 @@ use crate::random_bv_arg;
 use crate::smt::{ctx, BitVec};
 use crate::storage::Address;
 
-
 /**
     Note: Some of these functions in EVM have no arguments.
     The reason they are passed an argument here is because a zero argument function is

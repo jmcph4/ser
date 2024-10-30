@@ -168,12 +168,15 @@ impl<'ctx> Execution<'ctx> {
         let curr_inst = curr_state.curr_instruction();
         let curr_pc = curr_state.pc();
         //eprintln!("CURR STATE IN STEP FROM MUT: {:#?}", curr_state);
-        
+
         let change_rec = curr_inst.exec(curr_state, env);
-       
+
         eprintln!("CHANGE REC IN STEP: {:#?}", change_rec);
-        eprintln!("Instruction: {:#?} STACK: {:#?}, ",curr_inst, curr_state.stack());
-        
+        eprintln!(
+            "Instruction: {:#?} STACK: {:#?}, ",
+            curr_inst,
+            curr_state.stack()
+        );
 
         let is_branch = change_rec.constraints.is_some();
         curr_state.apply_change(change_rec.clone());

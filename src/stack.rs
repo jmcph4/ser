@@ -21,7 +21,7 @@ impl<const SZ: usize> Stack<SZ> {
     }
 
     pub fn pop(&mut self) -> BitVec<SZ> {
-       // eprintln!("STACK SIZE: {} AND STACK TOP {:#?}", self.size, self.peek());
+        // eprintln!("STACK SIZE: {} AND STACK TOP {:#?}", self.size, self.peek());
         self.size -= 1;
         self.stack.pop().unwrap()
     }
@@ -55,9 +55,13 @@ impl<const SZ: usize> Stack<SZ> {
             let top_idx = self.size - 1;
             let swap_idx = self.size - swap_depth - 1;
             let top = self.peek().cloned().unwrap();
-            let swapped = self.peek_nth(swap_depth).cloned().unwrap_or_else(|| panic!("stack too deep to swap with depth {}. Stack size: {}",
-                swap_depth,
-                self.size()));
+            let swapped = self.peek_nth(swap_depth).cloned().unwrap_or_else(|| {
+                panic!(
+                    "stack too deep to swap with depth {}. Stack size: {}",
+                    swap_depth,
+                    self.size()
+                )
+            });
             //eprintln!("STACK BEFORE SWAP: {:#?}", new_stack);
             new_stack = new_stack
                 .into_iter()
@@ -119,7 +123,7 @@ impl<const SZ: usize> MachineComponent for Stack<SZ> {
             //     swap_depth, new_stack
             // );
             new_stack.swap_nth(swap_depth);
-           // eprintln!("STACK AFTER {:#?}", new_stack);
+            // eprintln!("STACK AFTER {:#?}", new_stack);
         }
 
         self.stack = new_stack.stack;

@@ -21,11 +21,10 @@ fn main() {
 
     let execution = evm.exec();
     {
-       // eprintln!("STATE TREE: {:#?}", execution.states);
+        // eprintln!("STATE TREE: {:#?}", execution.states);
         let leaf = execution.states.leaves();
         eprintln!("LEAVES: {:#?}", leaf);
         assert_eq!(14, leaf.len());
-    
     }
 
     let reachability_report = Evm::exec_check(execution);

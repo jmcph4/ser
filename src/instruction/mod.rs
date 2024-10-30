@@ -21,15 +21,12 @@ use crate::{
     stack::Stack,
 };
 
-use justerror::Error;
 use super::smt::*;
-
+use justerror::Error;
 
 #[Error]
 pub enum InstructionError {
-    StackEmpty{
-        pc: usize,
-    }
+    StackEmpty { pc: usize },
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Instruction {
@@ -670,7 +667,7 @@ impl<'ctx> MachineInstruction<'ctx, 32> for Instruction {
                     halt: false,
                     storage: None,
                 }
-            },
+            }
             Instruction::Balance => {
                 let stack = mach.stack();
                 let addr = stack.peek().unwrap();
@@ -705,7 +702,7 @@ impl<'ctx> MachineInstruction<'ctx, 32> for Instruction {
             }
             Instruction::Caller => {
                 let stack = mach.stack();
-                let caller = env.caller();//caller().apply(&[]).as_bv().unwrap();
+                let caller = env.caller(); //caller().apply(&[]).as_bv().unwrap();
                 let stack_diff = StackChange::with_ops(vec![pop(), push(caller)]);
 
                 MachineRecord {
@@ -772,15 +769,17 @@ impl<'ctx> MachineInstruction<'ctx, 32> for Instruction {
                 src_offset.simplify();
                 size.simplify();
                 // eprintln!("MACH PC: {:#?}", mach.pc());
-                // eprintln!("MEM DEST OFFSET {:#?}, MEM READ OFFSET: {:#?}, MEM ITEM SIZE: {:#?}, MEM SIZE: {:#?}", 
-                //     dest_offset, 
-                //     src_offset, 
-                //     usize::from(size.clone()), 
+                // eprintln!("MEM DEST OFFSET {:#?}, MEM READ OFFSET: {:#?}, MEM ITEM SIZE: {:#?}, MEM SIZE: {:#?}",
+                //     dest_offset,
+                //     src_offset,
+                //     usize::from(size.clone()),
                 //     mach.mem().m_size());
                 // eprintln!("TOTAL CODE BYTE LEN: {:#?}, TOTAL CODE SIZE: {:#?}", mach.pgm.bytes.len(), mach.pgm.get_size());
 
-                let code_last_idx_to_read = usize::from(src_offset.clone()) + usize::from(size.clone());
-                let code = &mach.pgm.bytes[src_offset.clone().into()..code_last_idx_to_read].to_vec();
+                let code_last_idx_to_read =
+                    usize::from(src_offset.clone()) + usize::from(size.clone());
+                let code =
+                    &mach.pgm.bytes[src_offset.clone().into()..code_last_idx_to_read].to_vec();
                 //eprintln!("CODE SIZE: {:#?}", code.len());
                 let mut i: usize = 0;
                 let mut mem_ops = vec![];
@@ -790,33 +789,28 @@ impl<'ctx> MachineInstruction<'ctx, 32> for Instruction {
                     }
                     let offset_add: BitVec<32> = bvi(i as i32);
                     let mut idx = (dest_offset.as_ref().bvadd(offset_add.as_ref())).simplify();
-                    mem_ops.push(
-                        MemOp::WriteByte { idx: idx.into(), val: code.get(i).unwrap_or_else(|| panic!("Couldnt get code byte at index {}", i)).clone() }
-                    );
-                   
+                    mem_ops.push(MemOp::WriteByte {
+                        idx: idx.into(),
+                        val: code
+                            .get(i)
+                            .unwrap_or_else(|| panic!("Couldnt get code byte at index {}", i))
+                            .clone(),
+                    });
+
                     i += 1;
                 }
-                let stack_change = StackChange::with_ops(
-                    vec![
-                        StackOp::Pop,
-                        StackOp::Pop,
-                        StackOp::Pop
-                    ]
-                );
-                
+                let stack_change =
+                    StackChange::with_ops(vec![StackOp::Pop, StackOp::Pop, StackOp::Pop]);
+
                 MachineRecord {
                     stack: Some(stack_change),
-                    mem: Some(MemChange {
-                        ops_log: mem_ops
-                    }),
+                    mem: Some(MemChange { ops_log: mem_ops }),
                     pc: (mach.pc(), mach.pc() + self.byte_size()),
                     constraints: None,
                     halt: false,
                     storage: None,
                 }
-                
-                
-            },
+            }
             Instruction::GasPrice => {
                 let stack = mach.stack();
                 let price = gas_price().apply(&[]).as_bv().unwrap();
@@ -1082,9 +1076,8 @@ impl<'ctx> MachineInstruction<'ctx, 32> for Instruction {
                 }
             }
             Instruction::Jump => {
-                
                 let jump_dest = mach.stack().peek().unwrap();
-           
+
                 eprintln!("JUMP DEST: {:#?}", jump_dest);
                 let jump_dest_concrete = jump_dest.as_ref().simplify().as_u64().unwrap() as usize;
                 let stack_rec = StackChange {
@@ -1101,10 +1094,6 @@ impl<'ctx> MachineInstruction<'ctx, 32> for Instruction {
                     halt: false,
                     storage: None,
                 }
-                
-
-              
-               
             }
             Instruction::JumpI => {
                 let jump_dest = mach.stack().peek().unwrap();
@@ -1175,8 +1164,7 @@ impl<'ctx> MachineInstruction<'ctx, 32> for Instruction {
                     storage: None,
                     constraints: None,
                 }
-
-            },
+            }
             Instruction::JumpDest => MachineRecord {
                 stack: None,
                 pc: (mach.pc(), mach.pc() + self.byte_size()),

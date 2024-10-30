@@ -37,8 +37,7 @@ pub fn ctx() -> &'static Context {
     Ctx {}.current()
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum SolverType {
     #[default]
     Z3,

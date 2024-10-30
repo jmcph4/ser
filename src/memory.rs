@@ -57,7 +57,6 @@ impl MachineComponent for Memory {
 }
 
 impl Memory {
-
     pub fn memory(&self) -> Vec<BitVec<1>> {
         self.inner[0..self.m_size()].to_vec()
     }
@@ -72,7 +71,6 @@ impl Memory {
     pub fn write(&mut self, idx: Index, val: BitVec<1>) {
         let idx = idx.into();
         self.inner.insert(idx, val);
-      
     }
     pub fn read(&self, idx: Index) -> BitVec<1> {
         let idx: usize = idx.into();
@@ -87,9 +85,9 @@ impl Memory {
     ) -> Vec<BitVec<1>> {
         let idx: usize = offset.into();
 
-       // eprintln!("IDX: {idx:} and size: {:#?}", size.clone().into());
-        
-       // eprintln!("VAL IN MEM READ EITH OFFSET: {:#?}", val);
+        // eprintln!("IDX: {idx:} and size: {:#?}", size.clone().into());
+
+        // eprintln!("VAL IN MEM READ EITH OFFSET: {:#?}", val);
         self.inner[idx..(idx + size.clone().into())].to_vec()
     }
     pub fn read_word(&self, idx: Index) -> BitVec<32> {
@@ -149,21 +147,23 @@ impl std::fmt::Display for Memory {
             self.size(),
             self.highest_idx
         );
-        self.inner[0..self.m_size()].iter().enumerate().for_each(|(i, slot)| {
-            let str_to_push = if slot.as_ref().is_const() {
-                let slot_str = format!("{} --> {}\n", i, slot.as_ref());
-                slot_str
-            } else {
-                let slot_val_as_bytes = slot.as_ref().as_u64().unwrap().to_be_bytes();
-                let slot_str = format!("{} --> {:#?}\n", i, slot_val_as_bytes);
-                slot_str
-            };
-            mem_str = format!("{}{}", mem_str, str_to_push);
-        });
+        self.inner[0..self.m_size()]
+            .iter()
+            .enumerate()
+            .for_each(|(i, slot)| {
+                let str_to_push = if slot.as_ref().is_const() {
+                    let slot_str = format!("{} --> {}\n", i, slot.as_ref());
+                    slot_str
+                } else {
+                    let slot_val_as_bytes = slot.as_ref().as_u64().unwrap().to_be_bytes();
+                    let slot_str = format!("{} --> {:#?}\n", i, slot_val_as_bytes);
+                    slot_str
+                };
+                mem_str = format!("{}{}", mem_str, str_to_push);
+            });
         write!(f, "{}", mem_str)
     }
 }
-
 
 impl Memory {
     pub fn memory_string(&self) -> String {
@@ -174,7 +174,14 @@ impl Memory {
         );
         self.memory().iter().enumerate().for_each(|(i, slot)| {
             let str_to_push = if slot.as_ref().is_const() {
-                let slot_str = hex::encode([slot.as_ref().as_u64().unwrap().to_be_bytes().last().cloned().unwrap()]);
+                let slot_str = hex::encode([slot
+                    .as_ref()
+                    .as_u64()
+                    .unwrap()
+                    .to_be_bytes()
+                    .last()
+                    .cloned()
+                    .unwrap()]);
                 let slot_str = slot_str.to_string();
                 slot_str
             } else {

@@ -19,8 +19,11 @@ fn main() {
         let mem_val_leaf_2 = leaf.get(1).unwrap().val.mem();
         println!("MEM SIZE: {}", mem_val_leaf_2.size());
         println!("MEM M_SIZE: {}", mem_val_leaf_2.m_size());
-    
-        println!("LEAF 2 MEMORY CONCATENATED: {}", mem_val_leaf_2.memory_string());
+
+        println!(
+            "LEAF 2 MEMORY CONCATENATED: {}",
+            mem_val_leaf_2.memory_string()
+        );
     }
 
     let reachability_report = Evm::exec_check(execution);
