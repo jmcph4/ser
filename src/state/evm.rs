@@ -50,7 +50,7 @@ impl MachineComponent for EvmState {
     }
 }
 
-impl<'ctx> EvmState {
+impl EvmState {
     pub fn with_pgm(pgm: Program) -> Self {
         Self {
             pgm,

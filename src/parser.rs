@@ -79,9 +79,7 @@ fn parse_push(bytes: &[u8]) -> (Instruction, u8, Vec<u8>) {
         let pad_len = push_size as usize - bytes.len() + 1;
         //  eprintln!("pad len: {}", pad_len);
         let mut new_bytes = bytes.to_vec();
-        for _ in (0..pad_len) {
-            new_bytes.push(0);
-        }
+        new_bytes.resize(pad_len, 0);
         let push_val = &new_bytes[1..(push_size + 1) as usize];
         (
             push_op(push_size, push_val),
@@ -151,8 +149,8 @@ pub fn zero_extend<const SZ: usize>(bytes: &[u8]) -> [u8; SZ] {
         let start_idx = last_idx - (bytes.len() - 1);
         extended_bytes[start_idx..].clone_from_slice(bytes);
         let padding_len = SZ - bytes.len();
-        for i in (0..pad_size - 1) {
-            extended_bytes[i] = 0;
+        for curr_byte in extended_bytes.iter_mut().take(pad_size - 1) {
+            *curr_byte = 0;
         }
     } else {
         extended_bytes.copy_from_slice(bytes);

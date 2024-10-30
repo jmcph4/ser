@@ -69,8 +69,10 @@ impl GlobalStorage {
         self
     }
     pub fn with_contract(mut self, addr: Address, pgm: Vec<Instruction>) -> Self {
-        let mut account = AccountStorage::default();
-        account.code = Some(pgm);
+        let account = AccountStorage {
+            code: Some(pgm),
+            ..Default::default()
+        };
         self.inner.insert(addr, account);
         self
     }

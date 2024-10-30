@@ -30,7 +30,7 @@ impl<'ctx> ExecutionEnv<'ctx> {
     pub fn gen_random_address_32() -> BitVec<32> {
         let bv: BitVec<20> = random_bv_arg();
         let bv_ref = bv.as_ref();
-        let bv_new = bv_ref.zero_ext((12 * 8)).simplify();
+        let bv_new = bv_ref.zero_ext(12 * 8).simplify();
         bv_new.into()
     }
 

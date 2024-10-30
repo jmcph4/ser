@@ -1,3 +1,4 @@
+#![allow(clippy::type_complexity)]
 use std::collections::HashMap;
 use std::sync::RwLock;
 use std::{borrow::BorrowMut, cell::RefCell, rc::Rc};
@@ -218,44 +219,40 @@ impl<'ctx> Machine<32> for Evm<'ctx> {
         let first_step = exec.step_mut(self.ctx.read().as_ref().unwrap());
         step_recs.push(first_step);
         let mut ids = vec![];
-        loop {
-            if let Some(step) = step_recs.pop() {
-                // eprintln!(
-                //     "HALTED LEFT: {}, HALTED RIGHT: {}",
-                //     step.halted_left(),
-                //     step.halted_right()
-                // );
-                // eprintln!(
-                //     "LEFT ID: {:#?} RIGHT ID: {:#?}",
-                //     step.left_id(),
-                //     step.right_id()
-                // );
-                // if !step.halted_right() {
-                //     let continue_from_right = step.right_id();
-                if let Some(right_id) = step.right_id() {
-                    ids.push(right_id.id());
-                    let nxt_right_step =
-                        exec.step_from_mut(right_id, self.ctx.read().as_ref().unwrap());
-                    step_recs.push(nxt_right_step);
-                }
-                //}
-                // if !step.halted_left() {
-                //     let continue_from_left = step.left_id();
-                if let Some(left_id) = step.left_id() {
-                    ids.push(left_id.id());
-                    let nxt_step = exec.step_from_mut(left_id, self.ctx.read().as_ref().unwrap());
-                    step_recs.push(nxt_step);
-                }
-                // }
+        while let Some(step) = step_recs.pop() {
+            // eprintln!(
+            //     "HALTED LEFT: {}, HALTED RIGHT: {}",
+            //     step.halted_left(),
+            //     step.halted_right()
+            // );
+            // eprintln!(
+            //     "LEFT ID: {:#?} RIGHT ID: {:#?}",
+            //     step.left_id(),
+            //     step.right_id()
+            // );
+            // if !step.halted_right() {
+            //     let continue_from_right = step.right_id();
+            if let Some(right_id) = step.right_id() {
+                ids.push(right_id.id());
+                let nxt_right_step =
+                    exec.step_from_mut(right_id, self.ctx.read().as_ref().unwrap());
+                step_recs.push(nxt_right_step);
+            }
+            //}
+            // if !step.halted_left() {
+            //     let continue_from_left = step.left_id();
+            if let Some(left_id) = step.left_id() {
+                ids.push(left_id.id());
+                let nxt_step = exec.step_from_mut(left_id, self.ctx.read().as_ref().unwrap());
+                step_recs.push(nxt_step);
+            }
+            // }
 
-                if step.halted_left() && step.halted_right() {
-                    eprintln!(
-                        "Both have halted... Here are the step recs left: {:#?}",
-                        step_recs
-                    );
-                }
-            } else {
-                break;
+            if step.halted_left() && step.halted_right() {
+                eprintln!(
+                    "Both have halted... Here are the step recs left: {:#?}",
+                    step_recs
+                );
             }
         }
         eprintln!("All ids that were executed during a step: {:#?}", ids);
