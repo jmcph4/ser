@@ -85,7 +85,7 @@ impl<'ctx> EvmState {
     pub fn curr_instruction(&self) -> Instruction {
         self.pgm
             .get(self.pc)
-            .expect(&format!("Expected instruction at pc: {}", self.pc))
+            .unwrap_or_else(|| panic!("Expected instruction at pc: {}", self.pc))
     }
     pub fn curr_inst_debug(&self) -> Instruction {
         if !self.can_continue() {

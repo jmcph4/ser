@@ -88,9 +88,9 @@ impl Memory {
         let idx: usize = offset.into();
 
        // eprintln!("IDX: {idx:} and size: {:#?}", size.clone().into());
-        let val = self.inner[idx..(idx + size.clone().into())].to_vec();
+        
        // eprintln!("VAL IN MEM READ EITH OFFSET: {:#?}", val);
-        val
+        self.inner[idx..(idx + size.clone().into())].to_vec()
     }
     pub fn read_word(&self, idx: Index) -> BitVec<32> {
         let mut i = 0;
@@ -174,13 +174,13 @@ impl Memory {
         );
         self.memory().iter().enumerate().for_each(|(i, slot)| {
             let str_to_push = if slot.as_ref().is_const() {
-                let slot_str = hex::encode(&[slot.as_ref().as_u64().unwrap().to_be_bytes().last().cloned().unwrap()]);
-                let slot_str = format!("{}", slot_str);
+                let slot_str = hex::encode([slot.as_ref().as_u64().unwrap().to_be_bytes().last().cloned().unwrap()]);
+                let slot_str = slot_str.to_string();
                 slot_str
             } else {
                 let slot_val_as_bytes = slot.as_ref().as_u64().unwrap().to_be_bytes();
                 let slot_val = hex::encode(slot_val_as_bytes);
-                let slot_str = format!("{}", slot_val);
+                let slot_str = slot_val.to_string();
                 slot_str
             };
             mem_str = format!("{}{}", mem_str, str_to_push);

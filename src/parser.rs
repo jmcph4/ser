@@ -40,7 +40,7 @@ impl<'a> Parser<'a> {
             if is_push(b) {
                 // push1 0xab push4 0xabcd
                 let sz = push_size(b);
-                let (inst, push_size, new_bytes) = parse_push(&bytes[idx as usize..]);
+                let (inst, push_size, new_bytes) = parse_push(&bytes[idx..]);
                 skip_size = push_size;
                 pgm_map.insert(idx, inst.clone());
                 idx += skip_size as usize;
@@ -108,15 +108,15 @@ fn parse_swap(byte: u8) -> Instruction {
 }
 
 fn is_dup(b: u8) -> bool {
-    0x80 <= b && 0x8f >= b
+    (0x80..=0x8f).contains(&b)
 }
 
 fn is_swap(b: u8) -> bool {
-    0x90 <= b && 0x9f >= b
+    (0x90..=0x9f).contains(&b)
 }
 
 fn is_push(b: u8) -> bool {
-    0x60 <= b && 0x7f >= b
+    (0x60..=0x7f).contains(&b)
 }
 
 fn dup_size(b: u8) -> u8 {
@@ -149,7 +149,7 @@ pub fn zero_extend<const SZ: usize>(bytes: &[u8]) -> [u8; SZ] {
         let pad_size = SZ - bytes.len();
         let last_idx = SZ - 1;
         let start_idx = last_idx - (bytes.len() - 1);
-        extended_bytes[start_idx..].clone_from_slice(&bytes);
+        extended_bytes[start_idx..].clone_from_slice(bytes);
         let padding_len = SZ - bytes.len();
         for i in (0..pad_size - 1) {
             extended_bytes[i] = 0;

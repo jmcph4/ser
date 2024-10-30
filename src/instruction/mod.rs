@@ -791,9 +791,7 @@ impl<'ctx> MachineInstruction<'ctx, 32> for Instruction {
                     let offset_add: BitVec<32> = bvi(i as i32);
                     let mut idx = (dest_offset.as_ref().bvadd(offset_add.as_ref())).simplify();
                     mem_ops.push(
-                        MemOp::WriteByte { idx: idx.into(), val: code.get(i).expect(
-                            &format!("Couldnt get code byte at index {}", i)
-                        ).clone() }
+                        MemOp::WriteByte { idx: idx.into(), val: code.get(i).unwrap_or_else(|| panic!("Couldnt get code byte at index {}", i)).clone() }
                     );
                    
                     i += 1;

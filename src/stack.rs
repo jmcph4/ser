@@ -55,18 +55,16 @@ impl<const SZ: usize> Stack<SZ> {
             let top_idx = self.size - 1;
             let swap_idx = self.size - swap_depth - 1;
             let top = self.peek().cloned().unwrap();
-            let swapped = self.peek_nth(swap_depth).cloned().expect(&format!(
-                "stack too deep to swap with depth {}. Stack size: {}",
+            let swapped = self.peek_nth(swap_depth).cloned().unwrap_or_else(|| panic!("stack too deep to swap with depth {}. Stack size: {}",
                 swap_depth,
-                self.size()
-            ));
+                self.size()));
             //eprintln!("STACK BEFORE SWAP: {:#?}", new_stack);
             new_stack = new_stack
                 .into_iter()
                 .enumerate()
                 .map(move |(idx, val)| {
                     if idx == swap_idx {
-                        return top.clone();
+                        top.clone()
                     } else if idx == top_idx {
                         return swapped.clone();
                     } else {
@@ -120,7 +118,7 @@ impl<const SZ: usize> MachineComponent for Stack<SZ> {
             //     "SWAP OCCURRING of DEPTH {}. STACK BEFORE: {:#?}",
             //     swap_depth, new_stack
             // );
-            new_stack.swap_nth(swap_depth as usize);
+            new_stack.swap_nth(swap_depth);
            // eprintln!("STACK AFTER {:#?}", new_stack);
         }
 

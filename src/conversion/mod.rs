@@ -37,7 +37,7 @@ impl From<BitVec<32>> for Uint<256, 4> {
             let byte = byte_extract.as_u64().unwrap() as u8;
             numbits[i as usize] = byte;
         }
-        Bits::from_be_bytes(numbits).as_uint().clone()
+        *Bits::from_be_bytes(numbits).as_uint()
     }
 }
 

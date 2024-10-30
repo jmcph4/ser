@@ -77,8 +77,8 @@ impl<'ctx> ExecutionEnv<'ctx> {
             let offset = offset.clone().into();
             let bv_arr = cd[offset..].to_vec();
             let bv = bitvec_array_to_bv(bv_arr);
-            let bv = BitVec::from(bv);
-            bv
+            
+            BitVec::from(bv)
         } else {
             call_data_load().apply(&[offset.as_ref()]).as_bv().unwrap().into()
         }

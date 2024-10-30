@@ -38,7 +38,9 @@ pub fn ctx() -> &'static Context {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Default)]
 pub enum SolverType {
+    #[default]
     Z3,
 }
 
@@ -47,11 +49,6 @@ impl SolverType {
         match self {
             SolverType::Z3 => "z3".to_string(),
         }
-    }
-}
-impl Default for SolverType {
-    fn default() -> Self {
-        SolverType::Z3
     }
 }
 
