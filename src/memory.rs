@@ -182,13 +182,13 @@ impl Memory {
                     .last()
                     .cloned()
                     .unwrap()]);
-                let slot_str = slot_str.to_string();
-                slot_str
+                
+                slot_str.to_string()
             } else {
                 let slot_val_as_bytes = slot.as_ref().as_u64().unwrap().to_be_bytes();
                 let slot_val = hex::encode(slot_val_as_bytes);
-                let slot_str = slot_val.to_string();
-                slot_str
+                
+                slot_val.to_string()
             };
             mem_str = format!("{}{}", mem_str, str_to_push);
         });
